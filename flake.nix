@@ -9,40 +9,41 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    hyprland.url = "github:hyprwm/Hyprland";
-
+    hyprland.url = "github:hyprwm/hyprland";
+    
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
-      inputs.hyprland.follows = "hyprland";
     };
+
+    ags.url = "github:Aylur/ags";
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs:
-  let
-    inherit (nixpkgs) lib;
-  in
-  {
-
-    nixosConfigurations = 
     let
-      modules = [
-        home-manager.nixosModule
-        ./modules/nixos/base.nix
-      ];
-
-      hosts = lib.filterAttrs
-        (dir_entry: type: type == "directory" && builtins.pathExists(./hosts + "/${dir_entry}/configuration.nix"))
-        (builtins.readDir ./hosts);
-    in 
-    lib.mapAttrs(host: _: lib.nixosSystem {
       system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
 
-      modules = modules ++ [
-        ./hosts/${host}/configuration.nix
-      ];
+      inherit (nixpkgs) lib;
+    in
+    {
+    
+      nixosConfigurations =
+      let
+        hosts = lib.filterAttrs
+          (dir: type: type == "directory" && builtins.pathExists (./hosts/${dir}/default.nix))
+          (builtins.readDir ./hosts);
+      in
+      lib.mapAttrs (host: _: lib.nixosSystem {
+        system = system;
 
-      specialArgs = { inherit host; inherit inputs; };
-    })
-    hosts;
-  };
+        specialArgs = { inherit host; inherit inputs; };
+
+        modules = [
+          ./modules/nixos/base.nix
+          ./hosts/${host}/default.nix
+          home-manager.nixosModule
+        ];
+      }) hosts;
+
+    };
 }
