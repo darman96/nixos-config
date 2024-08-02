@@ -1,16 +1,13 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, user_name, ... }:
 
 {
   imports = [
-    ./../../modules/home-manager/hyprland.nix
-    inputs.ags.homeManagerModules.default
+    ./../../modules/home-manager/hyprland/default.nix
+    ./../../modules/home-manager/alacritty.nix
   ];
-  
-  # ░█▒█░▄▀▀▒██▀▒█▀▄
-  # ░▀▄█▒▄██░█▄▄░█▀▄
 
-  home.username = "darman";
-  home.homeDirectory = "/home/darman";
+  home.username = user_name;
+  home.homeDirectory = "/home/${user_name}";
 
   monitors = [
     {
@@ -32,31 +29,23 @@
       enabled = true;
     }
   ];
-
-  # ▒█▀▄▒▄▀▄░▄▀▀░█▄▀▒▄▀▄░▄▀▒▒██▀░▄▀▀
-  # ░█▀▒░█▀█░▀▄▄░█▒█░█▀█░▀▄█░█▄▄▒▄██
   
+  gtk.theme.package = pkgs.nightfox-gtk-theme;
+
   home.packages = with pkgs; [
-    alacritty
-    vivaldi
-    vivaldi-ffmpeg-codecs
     playerctl
     pamixer
-    gh
-    vscode
+    protonplus
+    vivaldi
     keepassxc
-    discord
 
     (nerdfonts.override { fonts = [ "FiraCode" ]; })
   ];
 
-  # ░▄▀▀░█▄█▒██▀░█▒░░█▒░
-  # ▒▄██▒█▒█░█▄▄▒█▄▄▒█▄▄
-
   programs.zsh = {
     enable = true;
     enableCompletion = true;
-    enableAutosuggestions = true;
+    autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
     shellAliases = {
@@ -69,22 +58,10 @@
       theme = "amuse";
     };
   };
-
-  # ▒██▀░█▄░█░█▒█░█▒█▀▄░▄▀▄░█▄░█░█▄▒▄█▒██▀░█▄░█░▀█▀
-  # ░█▄▄░█▒▀█░▀▄▀░█░█▀▄░▀▄▀░█▒▀█░█▒▀▒█░█▄▄░█▒▀█░▒█▒
   
   home.sessionVariables = {
     # EDITOR = "emacs";
   };
-
-  # ░█▄▒▄█░█░▄▀▀░▄▀▀
-  # ░█▒▀▒█░█▒▄██░▀▄▄
-
-  programs.ags = {
-    enable = true;
-  };
-
-  programs.home-manager.enable = true;
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -93,5 +70,5 @@
   # You should not change this value, even if you update Home Manager. If you do
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
-  home.stateVersion = "23.11"; # Please read the comment before changing.
+  home.stateVersion = "24.05"; # Please read the comment before changing.
 }
