@@ -9,16 +9,6 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  fileSystems."/mnt/ssd_01" = {
-    device = "/dev/disk/by-partuuid/69798b68-efdf-46bc-8762-ce9c2b2c1267";
-    fsType = "ext4";
-  };
-
-  fileSystems."/mnt/hdd_01" = {
-    device = "/dev/disk/by-partuuid/b8445126-ec6d-4f88-818a-d9e13031d9a4";
-    fsType = "ext4";
-  };
-
   # Enable the KDE Plasma Desktop Environment.
   services.xserver.enable = true;
   services.displayManager.sddm.enable = true;

@@ -38,6 +38,7 @@
     protonplus
     vivaldi
     keepassxc
+    gh
 
     (nerdfonts.override { fonts = [ "FiraCode" ]; })
   ];
