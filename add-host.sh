@@ -19,6 +19,19 @@ if [ -z "$1" ]; then
 fi
 
 HOSTNAME="$1"
+
+# Validate hostname for Nix identifier compatibility
+# Nix identifiers can contain alphanumeric characters, underscores, and hyphens
+# But they should start with a letter or underscore
+if ! [[ "$HOSTNAME" =~ ^[a-zA-Z_][a-zA-Z0-9_-]*$ ]]; then
+    echo -e "${RED}Error: Invalid hostname '${HOSTNAME}'${NC}"
+    echo "Hostname must:"
+    echo "  - Start with a letter or underscore"
+    echo "  - Contain only alphanumeric characters, underscores, and hyphens"
+    echo "Example valid hostnames: server, my_host, web-server, server01"
+    exit 1
+fi
+
 HOST_DIR="hosts/${HOSTNAME}"
 
 # Check if host already exists
