@@ -166,7 +166,7 @@ cp flake.nix flake.nix.backup
 
 # Add the new host configuration to flake.nix
 # We'll insert it before the closing braces of nixosConfigurations
-if grep -q "nixosConfigurations = {" flake.nix; then
+if grep -q "nixosConfigurations[[:space:]]*=" flake.nix; then
     # Find the line number of the last host configuration
     # Insert the new configuration before the closing brace of nixosConfigurations
     
@@ -191,14 +191,14 @@ if grep -q "nixosConfigurations = {" flake.nix; then
     
     # Use awk to insert the new host before the closing brace of nixosConfigurations
     awk -v new_host="$NEW_HOST_ENTRY" '
-    /^    };$/ && !done && in_nixos {
+    /^[[:space:]]*};$/ && !done && in_nixos {
         print new_host
         done=1
     }
-    /nixosConfigurations = \{/ {
+    /nixosConfigurations[[:space:]]*=[[:space:]]*\{/ {
         in_nixos=1
     }
-    /^  };$/ && in_nixos {
+    /^[[:space:]]*};$/ && in_nixos {
         in_nixos=0
     }
     { print }
