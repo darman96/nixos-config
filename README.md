@@ -30,6 +30,7 @@ A multi-host NixOS configuration using Flakes and Home Manager, structured follo
 - **Home Manager integration**: User environment management
 - **Modular structure**: Shared common configuration with host-specific overrides
 - **Best practices**: Follows NixOS community conventions
+- **Automation tools**: Script to quickly add new hosts (`add-host.sh`)
 
 ## Installation
 
@@ -109,6 +110,19 @@ sudo nixos-rebuild switch --flake .#desktop
 ## Customization
 
 ### Adding a new host
+
+Use the provided `add-host.sh` script to automatically create a new host configuration:
+
+```bash
+./add-host.sh <hostname>
+```
+
+This will:
+- Create a new host directory with template configuration files
+- Automatically add the host to `flake.nix`
+- Display next steps for customization
+
+**Manual method:**
 
 1. Create a new directory under `hosts/`:
    ```bash
