@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Simple validation script to check basic syntax
+# Usage: ./validate.sh
+# If not executable, run: chmod +x validate.sh
 
 echo "Checking flake.nix structure..."
 
