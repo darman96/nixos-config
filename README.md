@@ -20,7 +20,6 @@ A multi-host NixOS configuration using Flakes and Home Manager, structured follo
 ├── home/                     # Home Manager configurations
 │   └── common/
 │       └── home.nix          # Common user configuration
-└── users/                    # User-specific configurations
 ```
 
 ## Features
