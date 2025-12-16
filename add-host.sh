@@ -80,6 +80,12 @@ cat > "${HOST_DIR}/configuration.nix" << EOF
 }
 EOF
 
+# Create hardware-configuration.nix placeholder
+cat > "${HOST_DIR}/hardware-configuration.nix" << EOF
+# Placeholder
+EOF
+
+
 echo -e "${GREEN}✓${NC} Created ${HOST_DIR}/configuration.nix"
 
 echo ""
