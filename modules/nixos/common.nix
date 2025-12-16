@@ -53,21 +53,6 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # Default shell
-  programs.zsh = {
-    enable = true;
-    enableCompletions = true;
-    syntaxHighlighting.enable = true;
-    
-    shellAliases = {
-      ll = "ls -l";
-      la = "ls -a";
-      update = "sudo nixos-rebuild switch";
-    };
-    
-    history.size = 10000;
-  };
-
   # System state version
   system.stateVersion = "25.11";
 }
