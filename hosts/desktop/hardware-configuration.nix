@@ -36,10 +36,10 @@
   # For AMD: hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 
   # Graphics
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
+    enableDri = true;
+    enable32Bit = true;
   };
 
   # Networking
