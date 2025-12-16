@@ -10,27 +10,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
-  let 
-    lib = nixpkgs.lib;
-    
-    findHosts = dir:
-      lib.pipe dir [
-        builtins.readDir
-        (lib.mapAttrsToList (name: type:
-          if type == "directory" then
-            let
-              configPath = dir + "/${name}/configuration.nix";
-            in
-            if builtins.pathExists configPath then
-              [ { inherit name; path = configPath; } ]
-            else []
-          else []
-        ))
-        lib.flatten      
-      ];
-    
-  in {
+  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
     # NixOS configurations
     nixosConfigurations = {
       # Desktop configuration
@@ -49,11 +29,11 @@
         ];
       };
 
-      # Laptop configuration
-      laptop = nixpkgs.lib.nixosSystem {
+      # Server configuration
+      server = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
-          ./hosts/laptop/configuration.nix
+          ./hosts/server/configuration.nix
           ./modules/nixos/common.nix
           
           home-manager.nixosModules.home-manager
