@@ -41,7 +41,6 @@
     tmux
     
     # Network tools
-    networkmanager
     
     # File management
     tree
