@@ -10,7 +10,27 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  let 
+    lib = nixpkgs.lib;
+    
+    findHosts = dir:
+      lib.pipe dir [
+        builtins.readDir
+        (lib.mapAttrsToList (name: type:
+          if type == "directory" then
+            let
+              configPath = dir + "/${name}/configuration.nix";
+            in
+            if builtins.pathExists configPath then
+              [ { inherit name; path = configPath; } ]
+            else []
+          else []
+        ))
+        lib.flatten      
+      ];
+    
+  in {
     # NixOS configurations
     nixosConfigurations = {
       # Desktop configuration

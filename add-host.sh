@@ -62,37 +62,8 @@ cat > "${HOST_DIR}/configuration.nix" << EOF
     ./hardware-configuration.nix
   ];
 
-  # Enable X11 windowing system (optional - comment out for servers)
-  services.xserver = {
-    enable = true;
-    
-    # Choose your desktop environment
-    # GNOME:
-    displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
-    
-    # Or KDE Plasma:
-    # displayManager.sddm.enable = true;
-    # desktopManager.plasma5.enable = true;
-    
-    # Or XFCE:
-    # displayManager.lightdm.enable = true;
-    # desktopManager.xfce.enable = true;
-    
-    # Keyboard layout
-    xkb.layout = "us";
-  };
-
   # Host-specific packages
-  environment.systemPackages = with pkgs; [
-    # Add your packages here
-    vim
-    wget
-    curl
-  ];
-
-  # Enable CUPS for printing (optional)
-  # services.printing.enable = true;
+  environment.systemPackages = with pkgs; [];
 
   # Define a user account
   users.users.user = {
@@ -111,130 +82,6 @@ EOF
 
 echo -e "${GREEN}✓${NC} Created ${HOST_DIR}/configuration.nix"
 
-# Create hardware-configuration.nix template
-cat > "${HOST_DIR}/hardware-configuration.nix" << 'EOF'
-{ config, lib, pkgs, modulesPath, ... }:
-
-{
-  # Hardware configuration for this host
-  # IMPORTANT: Replace this template with your actual hardware configuration
-  # Generate it with: nixos-generate-config --show-hardware-config
-  
-  imports = [
-    (modulesPath + "/installer/scan/not-detected.nix")
-  ];
-
-  # Boot configuration
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-intel" ]; # Use "kvm-amd" for AMD processors
-  boot.extraModulePackages = [ ];
-
-  # Filesystems - TEMPLATE ONLY, replace with your actual configuration
-  fileSystems."/" = {
-    device = "/dev/disk/by-label/nixos";
-    fsType = "ext4";
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-label/boot";
-    fsType = "vfat";
-  };
-
-  # Swap - uncomment and configure if needed
-  # swapDevices = [
-  #   { device = "/dev/disk/by-label/swap"; }
-  # ];
-
-  # CPU microcode updates
-  hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-  # For AMD: hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-
-  # Graphics
-  hardware.opengl = {
-    enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
-  };
-
-  # Networking
-  networking.useDHCP = lib.mkDefault true;
-}
-EOF
-
-echo -e "${GREEN}✓${NC} Created ${HOST_DIR}/hardware-configuration.nix"
-
-# Add entry to flake.nix
-echo ""
-echo -e "${YELLOW}Adding host to flake.nix...${NC}"
-
-# Check if flake.nix exists
-if [ ! -f "flake.nix" ]; then
-    echo -e "${RED}Error: flake.nix not found${NC}"
-    exit 1
-fi
-
-# Create a backup
-cp flake.nix flake.nix.backup
-
-# Add the new host configuration to flake.nix
-# We'll insert it before the closing braces of nixosConfigurations
-if grep -q "nixosConfigurations[[:space:]]*=" flake.nix; then
-    # Find the line number of the last host configuration
-    # Insert the new configuration before the closing brace of nixosConfigurations
-    
-    # Create the new host entry
-    NEW_HOST_ENTRY="
-      # ${HOSTNAME} configuration
-      ${HOSTNAME} = nixpkgs.lib.nixosSystem {
-        system = \"x86_64-linux\";
-        modules = [
-          ./hosts/${HOSTNAME}/configuration.nix
-          ./modules/nixos/common.nix
-          
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.user = import ./home/common/home.nix;
-          }
-        ];
-      };
-"
-    
-    # Use awk to insert the new host before the closing brace of nixosConfigurations
-    awk -v new_host="$NEW_HOST_ENTRY" '
-    BEGIN { in_nixos=0; nixos_depth=0; done=0 }
-    /nixosConfigurations[[:space:]]*=[[:space:]]*\{/ {
-        in_nixos=1
-        nixos_depth=1
-        print
-        next
-    }
-    in_nixos {
-        # Count opening and closing braces to track nesting
-        open = gsub(/\{/, "{")
-        close = gsub(/\}/, "}")
-        nixos_depth += open - close
-        if (nixos_depth == 0 && !done) {
-            print new_host
-            done=1
-            in_nixos=0
-        }
-        print
-        next
-    }
-    { print }
-    ' flake.nix.backup > flake.nix
-    
-    echo -e "${GREEN}✓${NC} Added ${HOSTNAME} to flake.nix"
-    rm flake.nix.backup
-else
-    echo -e "${RED}Error: Could not find nixosConfigurations in flake.nix${NC}"
-    mv flake.nix.backup flake.nix
-    exit 1
-fi
-
 echo ""
 echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${GREEN}✓ Successfully created host: ${HOSTNAME}${NC}"
@@ -242,7 +89,7 @@ echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━
 echo ""
 echo "Next steps:"
 echo ""
-echo "1. Replace the hardware configuration:"
+echo "1. Generate the hardware configuration:"
 echo -e "   ${YELLOW}nixos-generate-config --show-hardware-config > ${HOST_DIR}/hardware-configuration.nix${NC}"
 echo ""
 echo "2. Customize the configuration:"

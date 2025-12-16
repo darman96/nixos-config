@@ -6,41 +6,24 @@
   # Boot loader configuration
   boot.loader = {
     systemd-boot.enable = true;
-    efi.canTouchEfiVariables = true;
   };
 
   # Networking
   networking.networkmanager.enable = true;
 
-  # Set your time zone
-  time.timeZone = "UTC";
-
-  # Select internationalisation properties
+  # Localisation
+  time.timeZone = "Europe/Berlin";
   i18n.defaultLocale = "en_US.UTF-8";
-
-  # Enable sound
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
 
   # Common system packages
   environment.systemPackages = with pkgs; [
     # System utilities
-    vim
+    nano
     wget
     curl
     git
     htop
     btop
-    tmux
-    
-    # Network tools
     
     # File management
     tree
@@ -71,8 +54,21 @@
   nixpkgs.config.allowUnfree = true;
 
   # Default shell
-  programs.bash.enable = true;
+  programs.zsh = {
+    enable = true;
+    enableCompletions = true;
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
+    
+    shellAliases = {
+      ll = "ls -l";
+      la = "ls -a";
+      update = "sudo nixos-rebuild switch";
+    };
+    
+    history.size = 10000;
+  };
 
   # System state version
-  system.stateVersion = "24.05";
+  system.stateVersion = "25.11";
 }
