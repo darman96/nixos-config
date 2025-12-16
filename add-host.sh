@@ -204,15 +204,25 @@ if grep -q "nixosConfigurations[[:space:]]*=" flake.nix; then
     
     # Use awk to insert the new host before the closing brace of nixosConfigurations
     awk -v new_host="$NEW_HOST_ENTRY" '
-    /^[[:space:]]*};$/ && !done && in_nixos {
-        print new_host
-        done=1
-    }
+    BEGIN { in_nixos=0; nixos_depth=0; done=0 }
     /nixosConfigurations[[:space:]]*=[[:space:]]*\{/ {
         in_nixos=1
+        nixos_depth=1
+        print
+        next
     }
-    /^[[:space:]]*};$/ && in_nixos {
-        in_nixos=0
+    in_nixos {
+        # Count opening and closing braces to track nesting
+        open = gsub(/\{/, "{")
+        close = gsub(/\}/, "}")
+        nixos_depth += open - close
+        if (nixos_depth == 0 && !done) {
+            print new_host
+            done=1
+            in_nixos=0
+        }
+        print
+        next
     }
     { print }
     ' flake.nix.backup > flake.nix
